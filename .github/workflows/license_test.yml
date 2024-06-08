@@ -9,5 +9,5 @@ jobs:
   license_tests:
     uses: openvoiceos/.github/.github/workflows/license_tests.yml@feat/shared_actions1
     with:
-        system_deps: python3-lgpio
+        system_deps: python3-lgpio liblgpio-dev
         pip_packages: wheel
