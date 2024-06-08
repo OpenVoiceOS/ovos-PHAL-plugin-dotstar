@@ -43,7 +43,7 @@ Add the following to your `~/.config/mycroft/mycroft.conf` file
 {
     "PHAL": {
         "ovos-PHAL-plugin-dotstar": {
-            "dotstar_hat": "ADAFRUIT2"
+            "dotstar_hat": "ADAFRUIT2MIC"
         }
     }
 }
@@ -62,8 +62,9 @@ There are two pre-existing plugins that either need uninstalled with pip, or bla
 
 ### TODO
 
-- [ ] Add more animations
+- [x] Add more animations
 - [ ] User configurable colors
+- [ ] User configurable animations
 - [ ] Add github tests and automation
 
 Please enjoy this plugin and don't be afraid to create an [issue](#) if you run into any problems.
