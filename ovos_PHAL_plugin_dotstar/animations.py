@@ -37,7 +37,7 @@ class LedAnimation:
 
 
 class BreatheLedAnimation(LedAnimation):
-    def __init__(self, leds: DotStarLed, color: Color):
+    def __init__(self, leds: DotStarLed, color: Color, **kwargs):
         """
         Breathing effect where all LEDs dim up and down until timing out
         or being stopped. LEDs are turned off after animation.
@@ -80,7 +80,7 @@ class BreatheLedAnimation(LedAnimation):
 
 class ChaseLedAnimation(LedAnimation):
     def __init__(self, leds: DotStarLed, foreground_color: Color,
-                 background_color: Optional[Color] = None):
+                 background_color: Optional[Color] = None, **kwargs):
         """
         Chase effect where all LEDs are lit individually in order until timing
         out or being stopped. LEDs are turned off after animation.
@@ -118,7 +118,7 @@ class ChaseLedAnimation(LedAnimation):
 
 class FillLedAnimation(LedAnimation):
     def __init__(self, leds: DotStarLed, fill_color: Color,
-                 reverse: bool = False):
+                 reverse: bool = False, **kwargs):
         """
         Fill effect where LEDs are set to the same color in order. LEDs will
         remain lit after the animation.
@@ -147,7 +147,7 @@ class FillLedAnimation(LedAnimation):
 
 class RefillLedAnimation(LedAnimation):
     def __init__(self, leds: DotStarLed, fill_color: Color,
-                 reverse: bool = False):
+                 reverse: bool = False, **kwargs):
         """
         Fill effect in the requested color, followed by fill effect in black.
         Animation repeats until timing out or being stopped. LEDs are turned
@@ -181,7 +181,7 @@ class RefillLedAnimation(LedAnimation):
 
 class BounceLedAnimation(LedAnimation):
     def __init__(self, leds: DotStarLed, fill_color: Color,
-                 reverse: bool = False):
+                 reverse: bool = False, **kwargs):
         """
         Fill effect in the requested color, followed by reversed fill effect
         in black. Animation repeats until timing out or being stopped.
@@ -190,6 +190,7 @@ class BounceLedAnimation(LedAnimation):
         @param fill_color: Color to fill LEDs
         @param reverse: If true, fill in reverse order
         """
+        LOG.debug("bouncing")
         LedAnimation.__init__(self, leds)
         self.stopping = Event()
         self.fill_color = fill_color
@@ -217,7 +218,7 @@ class BounceLedAnimation(LedAnimation):
 
 class BlinkLedAnimation(LedAnimation):
     def __init__(self, leds: DotStarLed, color: Color,
-                 num_blinks: int = 2, repeat: bool = False):
+                 num_blinks: int = 2, repeat: bool = False, **kwargs):
         """
         Blink LEDs in the requested color, for the requested number of blinks.
         If repeating, pause and repeat the effect until timeout or stop event.
@@ -258,7 +259,7 @@ class BlinkLedAnimation(LedAnimation):
 
 
 class AlternatingLedAnimation(LedAnimation):
-    def __init__(self, leds: DotStarLed, color: Color):
+    def __init__(self, leds: DotStarLed, color: Color, **kwargs):
         """
         Show alternating even/odd LEDs
         @param leds: LED object to interact with

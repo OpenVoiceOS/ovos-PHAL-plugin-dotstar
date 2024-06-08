@@ -19,7 +19,6 @@ from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic
 from lingua_franca.util.colors import Color
 from lingua_franca.internal import load_language
 
-# from ovos_PHAL_plugin_dotstar.boards import RESPEAKER2MIC, RESPEAKER4_6_8MIC, ADAFRUIT2MIC
 from ovos_PHAL_plugin_dotstar.leds import DotStarLed
 from ovos_PHAL_plugin_dotstar.animations import animations
 
@@ -119,21 +118,75 @@ class DotStarLedControlPlugin(PHALPlugin):
             self._enable_pin = LED(5)
             self._enable_pin.on()
 
-        self.ds.fill(Color.from_description("Mycroft blue").rgb255)
+        self.ds.fill(self.main_color.rgb255)
         sleep(1.0)
         self.on_reset()
 
+    @property
+    def main_color(self):
+        color = self.config.get(
+            "main_color", Color.from_description("Mycroft blue"))
+        if isinstance(color, str):
+            try:
+                color = eval(color)
+                color = Color.from_rgb(color[0], color[1], color[2])
+            except Exception as e:
+                LOG.debug(f"Exception caught in eval {e}")
+                try:
+                    LOG.debug(color)
+                    color = Color.from_hex(color)
+                    LOG.debug(color)
+                except Exception as e:
+                    LOG.debug(f"Exception caught in description {e}")
+                    try:
+                        color = Color.from_description(color)
+                    except Exception as e:
+                        LOG.warning(f"could not set color to {color}: {e}")
+                        color = Color.from_description("Mycroft blue")
+        return color
+
+    @property
+    def background_color(self):
+        color = self.config.get(
+            "background_color", Color.from_description("OVOS red"))
+        if isinstance(color, str):
+            try:
+                color = eval(color)
+                color = Color.from_rgb(color[0], color[1], color[2])
+            except Exception as e:
+                LOG.debug(f"Exception caught in eval {e}")
+                try:
+                    color = Color.from_description(color)
+                except Exception as e:
+                    LOG.debug(f"Exception caught in description {e}")
+                    try:
+                        color = Color.from_hex(color)
+                    except Exception as e:
+                        LOG.warning(f"could not set color to {color}: {e}")
+                        color = Color.from_description("OVOS red")
+        return color
+
+    @property
+    def listen_animation(self):
+        return self.config.get("listen_animation", "breathe")
+
+    @property
+    def talking_animation(self):
+        return self.config.get("talking_animation", "blink")
+
     def on_record_begin(self, message=None):
-        self.active_animation = animations["breathe"](
-            self.ds, Color.from_description("mycroft blue"))
+        self.active_animation = animations[self.listen_animation](
+            self.ds, self.main_color)
         self.active_animation.start()
 
     def on_record_end(self, message=None):
         self.on_reset()
 
     def on_audio_output_start(self, message=None):
-        self.active_animation = animations["blink"](
-            self.ds, Color.from_description("mycroft blue"), repeat=True)
+        LOG.debug(animations[self.talking_animation])
+        self.active_animation = animations[self.talking_animation](
+            self.ds, self.main_color, repeat=True)
+        LOG.debug(self.active_animation)
         self.active_animation.start()
 
     def on_audio_output_end(self, message=None):
