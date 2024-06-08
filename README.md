@@ -53,6 +53,60 @@ And restart OVOS
 
 Your LED's on your Adafruit voicebonnet will now show the same prompts as the ReSpeaker devices.
 
+## Custom Configuration
+
+Colors and animations can be configured in `~/.config/mycroft/mycroft.conf`
+
+```json
+{
+    "PHAL": {
+        "ovos-PHAL-plugin-dotstar": {
+            "main_color": "Mycroft blue",
+            "background_color": "OVOS red",
+            "listen_animation": "breath",
+            "talking_animation": "blink"
+        }
+    }
+}
+```
+
+`main_color` -> str:
+```
+    rgb value -> "32, 195, 63"
+    name -> "blue"
+    hex value -> "#22A7F0"
+```
+
+`background_color` -> str
+```
+    rgb value -> "32, 195, 63"
+    name -> "red"
+    hex value -> "#FF1A1A"
+```
+
+`listen_animation` -> str:
+```
+    one of:
+        'breathe'
+        'chase'
+        'fill'
+        'refill'
+        'bounce'
+        'blink'
+        'alternating'
+```
+
+`talking_animation` -> str:
+```
+    one of:
+        'breathe'
+        'chase'
+        'fill'
+        'refill'
+        'bounce'
+        'blink'
+        'alternating'
+```
 ## Conflicts With
 
 There are two pre-existing plugins that either need uninstalled with pip, or blacklisted in your `mycroft.conf` file.
@@ -63,8 +117,9 @@ There are two pre-existing plugins that either need uninstalled with pip, or bla
 ### TODO
 
 - [x] Add more animations
-- [ ] User configurable colors
-- [ ] User configurable animations
+- [x] User configurable colors
+- [ ] Theme support
+- [x] User configurable animations
 - [ ] Add github tests and automation
 
 Please enjoy this plugin and don't be afraid to create an [issue](#) if you run into any problems.
