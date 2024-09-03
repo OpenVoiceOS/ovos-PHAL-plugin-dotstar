@@ -1,5 +1,9 @@
 # Changelog
 
+## [V0.0.0](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/V0.0.0) (2024-06-08)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/V0.0.0a1...V0.0.0)
+
 ## [V0.0.0a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/V0.0.0a1) (2024-06-08)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/10bb60227703902e9367615d799fb60bbc5e72af...V0.0.0a1)
