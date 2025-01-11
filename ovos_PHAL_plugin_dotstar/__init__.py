@@ -14,7 +14,7 @@ from ovos_plugin_manager.templates.phal import PHALValidator
 from ovos_utils.log import LOG
 from ovos_config.config import Configuration
 
-from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic
+from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic, is_mark_1
 
 from lingua_franca.util.colors import Color
 from lingua_franca.internal import load_language
@@ -55,6 +55,9 @@ class DotStarLedControlPluginValidator(PHALValidator):
             return True
         # Try a direct hardware check
         if is_wm8960() or is_respeaker_4mic() or is_respeaker_6mic():
+            if is_mark_1():
+                LOG.debug("Mark 1 detected.  Dotstar is not needed")
+                return False
             LOG.debug("direct hardware check")
             return True
         LOG.debug("no validation")
