@@ -50,6 +50,24 @@ class DotStarLedControlPluginValidator(PHALValidator):
     @staticmethod
     def validate(config=None):
         # If the user enabled the plugin no need to go further
+        """
+        Validate the configuration for the DotStar LED control plugin.
+        
+        Determines whether the plugin should be activated based on configuration and hardware detection.
+        
+        Parameters:
+            config (dict, optional): Plugin configuration dictionary. Defaults to None.
+        
+        Returns:
+            bool: True if the plugin should be enabled, False otherwise.
+        
+        Conditions for validation:
+            1. If plugin is explicitly enabled in configuration
+            2. If specific audio hardware is detected (WM8960, ReSpeaker 4-mic, ReSpeaker 6-mic)
+            3. Excludes Mark 1 hardware configuration
+        
+        Logs debug information about validation process.
+        """
         if config.get("enabled"):
             LOG.debug("user enabled")
             return True
