@@ -14,7 +14,7 @@ from ovos_plugin_manager.templates.phal import PHALValidator
 from ovos_utils.log import LOG
 from ovos_config.config import Configuration
 
-from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic
+from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic, is_mark_1
 
 from lingua_franca.util.colors import Color
 from lingua_franca.internal import load_language
@@ -50,11 +50,32 @@ class DotStarLedControlPluginValidator(PHALValidator):
     @staticmethod
     def validate(config=None):
         # If the user enabled the plugin no need to go further
+        """
+        Validate the configuration for the DotStar LED control plugin.
+        
+        Determines whether the plugin should be activated based on configuration and hardware detection.
+        
+        Parameters:
+            config (dict, optional): Plugin configuration dictionary. Defaults to None.
+        
+        Returns:
+            bool: True if the plugin should be enabled, False otherwise.
+        
+        Conditions for validation:
+            1. If plugin is explicitly enabled in configuration
+            2. If specific audio hardware is detected (WM8960, ReSpeaker 4-mic, ReSpeaker 6-mic)
+            3. Excludes Mark 1 hardware configuration
+        
+        Logs debug information about validation process.
+        """
         if config.get("enabled"):
             LOG.debug("user enabled")
             return True
         # Try a direct hardware check
         if is_wm8960() or is_respeaker_4mic() or is_respeaker_6mic():
+            if is_mark_1():
+                LOG.debug("Mark 1 detected.  Dotstar is not needed")
+                return False
             LOG.debug("direct hardware check")
             return True
         LOG.debug("no validation")
