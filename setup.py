@@ -56,7 +56,7 @@ def required(requirements_file):
 
 PLUGIN_ENTRY_POINT = 'ovos-PHAL-plugin-dotstar=ovos_PHAL_plugin_dotstar:DotStarLedControlPlugin'
 setup(
-    name='ovos-PHAL-plugin-dotstar',
+    name='ovos_PHAL_plugin_dotstar',
     version=get_version(),
     description='An OVOS PHAL plugin to control DotStar type LEDs',
     url='https://github.com/builderjer/ovos-PHAL-plugin-dotstar',

@@ -3,7 +3,9 @@ from abc import abstractmethod
 from adafruit_dotstar import DotStar
 import board
 
-from ovos_plugin_manager.hardware.led import AbstractLed
+from ovos_utils.log import LOG
+
+from ovos_hardware_helpers.led import AbstractLed
 
 
 class DotStarLed(AbstractLed):
@@ -38,4 +40,4 @@ class DotStarLed(AbstractLed):
         :param bright_val: 0.0-1.0 brightness scalar value
         :returns: Float modified color value to account for brightness
         """
-        return min(255.0, round(color_val * bright_val))
+        return min(255, round(color_val * bright_val))
