@@ -16,8 +16,8 @@ from ovos_config.config import Configuration
 
 from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic, is_mark_1
 
-from lingua_franca.util.colors import Color
-from lingua_franca.internal import load_language
+from ovos_color_parser.matching import color_from_description
+from ovos_color_parser.models import Color, sRGBAColor
 
 from ovos_PHAL_plugin_dotstar.leds import DotStarLed
 from ovos_PHAL_plugin_dotstar.animations import animations
@@ -85,12 +85,6 @@ class DotStarLedControlPluginValidator(PHALValidator):
 class DotStarLedControlPlugin(PHALPlugin):
     validator = DotStarLedControlPluginValidator
 
-    lang = Configuration().get("lang", "en")
-    try:
-        load_language(lang)
-    except Exception as e:
-        LOG.error(f"Could not load language model {e}")
-
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-dotstar", config=config)
         self._enable_pin = None
@@ -143,48 +137,42 @@ class DotStarLedControlPlugin(PHALPlugin):
         sleep(1.0)
         self.on_reset()
 
-    @property
-    def main_color(self):
-        color = self.config.get(
-            "main_color", Color.from_description("Mycroft blue"))
+    def eval_color(self, color):
+        if isinstance(color, Color):
+            return color
         if isinstance(color, str):
             try:
-                color = eval(color)
-                color = Color.from_rgb(color[0], color[1], color[2])
+                color = color_from_description(color)
             except Exception as e:
-                LOG.debug(f"Exception caught in eval {e}")
+                LOG.debug(f"Could not get color {color} from description: {e}")
+                # try:
+                #     if is_hex_code_valid(color):
                 try:
-                    LOG.debug(color)
-                    color = Color.from_hex(color)
-                    LOG.debug(color)
+                    color = sRGBAColor.from_hex_str(color)
+                    return color
                 except Exception as e:
-                    LOG.debug(f"Exception caught in description {e}")
-                    try:
-                        color = Color.from_description(color)
-                    except Exception as e:
-                        LOG.warning(f"could not set color to {color}: {e}")
-                        color = Color.from_description("Mycroft blue")
+                    LOG.debug(f"Could not get color {color} from hex code: {e}")
+                    # else:
+                    if isinstance(color, tuple) and len(color) == 3:
+                        try:
+                            color = sRGBAColor(color[0], color[1], color[2])
+                            return color
+                        except Exception as e:
+                            LOG.debug(f"Could not get color {color} from RGB: {e}")
+                except Exception as e:
+                    LOG.warning(f"Could not set color {color}: {e}   Defaulting to Mycroft Blue")
+                    return color_from_description("Mycroft blue")
+                            
+    @property
+    def main_color(self):
+        color = self.eval_color(self.config.get(
+            "main_color", "Mycroft blue"))
         return color
 
     @property
     def background_color(self):
-        color = self.config.get(
-            "background_color", Color.from_description("OVOS red"))
-        if isinstance(color, str):
-            try:
-                color = eval(color)
-                color = Color.from_rgb(color[0], color[1], color[2])
-            except Exception as e:
-                LOG.debug(f"Exception caught in eval {e}")
-                try:
-                    color = Color.from_description(color)
-                except Exception as e:
-                    LOG.debug(f"Exception caught in description {e}")
-                    try:
-                        color = Color.from_hex(color)
-                    except Exception as e:
-                        LOG.warning(f"could not set color to {color}: {e}")
-                        color = Color.from_description("OVOS red")
+        color = self.eval_color(self.config.get(
+            "background_color", "OVOS red"))
         return color
 
     @property
