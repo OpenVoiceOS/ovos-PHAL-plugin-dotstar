@@ -3,8 +3,6 @@ from abc import abstractmethod
 from adafruit_dotstar import DotStar
 import board
 
-from ovos_utils.log import LOG
-
 from ovos_hardware_helpers.led import AbstractLed
 
 

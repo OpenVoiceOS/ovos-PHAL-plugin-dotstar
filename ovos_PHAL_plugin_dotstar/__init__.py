@@ -87,12 +87,6 @@ class DotStarLedControlPluginValidator(PHALValidator):
 class DotStarLedControlPlugin(PHALPlugin):
     validator = DotStarLedControlPluginValidator
 
-    # lang = Configuration().get("lang", "en")
-    # try:
-    #     load_language(lang)
-    # except Exception as e:
-    #     LOG.error(f"Could not load language model {e}")
-
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-dotstar", config=config)
         self._enable_pin = None
@@ -136,7 +130,7 @@ class DotStarLedControlPlugin(PHALPlugin):
 
         # Required for ReSpeaker 4/6/8 mic
         if not is_wm8960():
-            LOG.debug("enable LED's")
+            LOG.debug("enable ReSpeaker 4/6/8")
             cleanup(5)
             self._enable_pin = LED(5)
             self._enable_pin.on()
@@ -151,26 +145,6 @@ class DotStarLedControlPlugin(PHALPlugin):
     @property
     def main_color(self):
         return self._main_color
-        # color = self.config.get(
-        #     "main_color", color_from_description("Mycroft blue", fuzzy=False))
-        # if isinstance(color, str):
-        #     try:
-        #         color = eval(color)
-        #         color = Color.from_rgb(color[0], color[1], color[2])
-        #     except Exception as e:
-        #         LOG.debug(f"Exception caught in eval {e}")
-        #         try:
-        #             LOG.debug(color)
-        #             color = Color.from_hex(color)
-        #             LOG.debug(color)
-        #         except Exception as e:
-        #             LOG.debug(f"Exception caught in description {e}")
-        #             try:
-        #                 color = Color.from_description(color)
-        #             except Exception as e:
-        #                 LOG.warning(f"could not set color to {color}: {e}")
-        #                 color = Color.from_description("Mycroft blue")
-        # return color
         
     @main_color.setter
     def main_color(self, color):
@@ -206,7 +180,6 @@ class DotStarLedControlPlugin(PHALPlugin):
         return self.config.get("talking_animation", "blink")
 
     def on_record_begin(self, message=None):
-        LOG.debug(f"I am listening {self.main_color} {animations[self.listen_animation]}")
         self.active_animation = animations[self.listen_animation](
             self.ds, self.main_color)
         self.active_animation.start()
@@ -215,13 +188,11 @@ class DotStarLedControlPlugin(PHALPlugin):
         self.on_reset()
 
     def on_audio_output_start(self, message=None):
-        LOG.debug(f"I am talking {self.main_color} {animations[self.talking_animation]}")
         self.active_animation = animations[self.talking_animation](
             self.ds, self.main_color, repeat=True)
         self.active_animation.start()
 
     def on_audio_output_end(self, message=None):
-        LOG.debug("I am done talking")
         self.on_reset()
 
     def on_think(self, message=None):
