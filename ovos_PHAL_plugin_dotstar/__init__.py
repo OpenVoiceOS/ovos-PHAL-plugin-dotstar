@@ -88,6 +88,22 @@ class DotStarLedControlPlugin(PHALPlugin):
     validator = DotStarLedControlPluginValidator
 
     def __init__(self, bus=None, config=None):
+        """
+        Initialize the DotStar LED control plugin, configure the DotStar device from configuration or detected hardware, enable ReSpeaker hardware if required, and apply the configured main color.
+        
+        The constructor will:
+        - Use config["dotstar_hat"] when present to load a predefined hat by key or construct a DotStar from a dict.
+        - Fall back to platform detection via check_i2c_platform() or direct hardware checks (WM8960, ReSpeaker 4/6) to choose a predefined hat.
+        - Enable the ReSpeaker enable pin when running on ReSpeaker hardware (not WM8960).
+        - Evaluate and store the main color via eval_color, fill the LEDs with that color, wait briefly, then reset the LED state.
+        
+        Parameters:
+            bus: Optional hardware bus or service (commonly provided by the runtime).
+            config (dict): Plugin configuration. Relevant keys:
+                - "dotstar_hat": either a string key referencing PREDEFINED_HATS or a dict with keys
+                    "clock_pin", "led_pin", "num_led", optional "brightness" (float), and optional "enable_pin".
+                - "main_color": color description (string or other accepted format) used to set the initial main color; defaults to "Mycroft Blue".
+        """
         super().__init__(bus=bus, name="ovos-PHAL-plugin-dotstar", config=config)
         self._enable_pin = None
         self.active_animation = None
@@ -144,14 +160,36 @@ class DotStarLedControlPlugin(PHALPlugin):
 
     @property
     def main_color(self):
+        """
+        Get the plugin's current primary LED color.
+        
+        Returns:
+            Color: The evaluated primary color used for LED animations and fills.
+        """
         return self._main_color
         
     @main_color.setter
     def main_color(self, color):
+        """
+        Set the plugin's main LED color by normalizing the provided color specification.
+        
+        Attempts to evaluate `color` via `eval_color`; if evaluation fails, falls back to the Color for "Mycroft Blue" (with fuzzy matching disabled). The resulting Color object is stored in `self._main_color`.
+        
+        Parameters:
+            color: A color specification (e.g., name string, hex string, dict, tuple, or Color instance) to be normalized and stored as the main color.
+        """
         self._main_color = eval_color(color) or color_from_description("Mycroft Blue", fuzzy=False)
 
     @property
     def background_color(self):
+        """
+        Resolve and return the plugin's background Color from configuration.
+        
+        The method accepts several configuration formats: a Color instance, a string containing a Python expression that evaluates to an (r, g, b) tuple, a descriptive color name, or a hex color string. If resolution fails, returns the Color for "OVOS red".
+        
+        Returns:
+            Color: The resolved background color.
+        """
         color = self.config.get(
             "background_color", Color.from_description("OVOS red"))
         if isinstance(color, str):
@@ -185,26 +223,61 @@ class DotStarLedControlPlugin(PHALPlugin):
         self.active_animation.start()
 
     def on_record_end(self, message=None):
+        """
+        Reset the DotStar LEDs when a recording ends.
+        
+        Parameters:
+            message (optional): The event message object for the recording-end signal; accepted for handler compatibility and ignored by this method.
+        """
         self.on_reset()
 
     def on_audio_output_start(self, message=None):
+        """
+        Start the configured talking animation on the DotStar LED.
+        
+        Sets the plugin's active animation to the configured talking animation (in repeat mode) and starts it.
+        
+        Parameters:
+            message (optional): Optional bus message payload; accepted for handler compatibility but not used.
+        """
         self.active_animation = animations[self.talking_animation](
             self.ds, self.main_color, repeat=True)
         self.active_animation.start()
 
     def on_audio_output_end(self, message=None):
+        """
+        Handle the end of audio output by resetting the DotStar LED state.
+        
+        Parameters:
+            message (optional): Event payload received when audio output ends; ignored by this handler.
+        """
         self.on_reset()
 
     def on_think(self, message=None):
         self.on_reset()
 
     def on_reset(self, message=None):
+        """
+        Stop any active LED animation and turn all DotStar LEDs off.
+        
+        Parameters:
+            message (optional): Event context or payload (accepted but ignored).
+        """
         if self.active_animation:
             self.active_animation.stop()
             self.active_animation = None
         self.ds.fill((0, 0, 0))
 
     def on_system_reset(self, message=None):
+        """
+        Handle a system reset event by restoring the plugin's LED state.
+        
+        Triggers the plugin's on_reset behavior to stop animations and clear LEDs. The optional
+        message parameter, if provided, is accepted for event compatibility but ignored.
+         
+        Parameters:
+            message (Any, optional): Event message payload (unused).
+        """
         self.on_reset()
 
     def shutdown(self):
