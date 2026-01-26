@@ -33,9 +33,13 @@ class DotStarLed(AbstractLed):
 
     def scale_brightness(color_val: int, bright_val: float) -> float:
         """
-        Scale an individual color value by a specified brightness.
-        :param color_val: 0-255 R, G, or B value
-        :param bright_val: 0.0-1.0 brightness scalar value
-        :returns: Float modified color value to account for brightness
+        Scale a single RGB channel value by a brightness factor and clamp to 0–255.
+        
+        Parameters:
+            color_val (int): Channel value in the range 0–255.
+            bright_val (float): Brightness multiplier where 0.0 means off and 1.0 means unchanged.
+        
+        Returns:
+            int: Scaled channel value rounded to the nearest integer and clamped to the range 0–255.
         """
         return min(255, round(color_val * bright_val))
