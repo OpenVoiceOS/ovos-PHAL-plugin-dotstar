@@ -1,13 +1,12 @@
 from abc import abstractmethod
 
-from adafruit_dotstar import DotStar
-import board
-
 from ovos_plugin_manager.hardware.led import AbstractLed
 
 
 class DotStarLed(AbstractLed):
-    def __init__(self, dotstar_led_strip: DotStar):
+    def __init__(self, dotstar_led_strip):
+        # dotstar_led_strip is an adafruit_dotstar.DotStar instance; the type is
+        # not imported here so the module is importable without LED hardware.
         self.dotstar = dotstar_led_strip
 
     @property

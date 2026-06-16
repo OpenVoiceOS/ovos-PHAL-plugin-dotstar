@@ -22,13 +22,19 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 dependencies = [
-    "adafruit-circuitpython-dotstar",
     "ovos-plugin-manager>=2.1.0,<3.0.0",
     "ovos-lingua-franca>=0.4.8a8",
     "ovos-i2c-detection>=0.0.5",
-    "gpiozero",
-    "rpi-lgpio"
+    # Raspberry Pi LED/GPIO stack. These only build/run on the Pi and pull C
+    # extensions (lgpio) that cannot compile on generic CI runners, so they are
+    # gated to ARM Linux. The plugin imports them lazily at LED init time.
+    "adafruit-circuitpython-dotstar ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
+    "gpiozero ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
+    "rpi-lgpio ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
 ]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
 
 [project.urls]
 Homepage = "https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar"
@@ -38,6 +44,9 @@ Homepage = "https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar"
 
 [tool.setuptools.dynamic]
 version = {attr = "version.__version__"}
+
+[tool.setuptools]
+py-modules = ["version"]
 
 [tool.setuptools.packages.find]
 where = ["."]
