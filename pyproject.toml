@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "adafruit-circuitpython-dotstar",
-    "ovos-plugin-manager>=0.0.1",
+    "ovos-plugin-manager>=2.1.0,<3.0.0",
     "ovos-lingua-franca>=0.4.8a8",
     "ovos-i2c-detection>=0.0.5",
     "gpiozero",
