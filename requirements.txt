@@ -1,6 +1,0 @@
-adafruit-circuitpython-dotstar
-ovos-plugin-manager>=0.0.1
-ovos-lingua-franca>=0.4.8a8
-ovos-i2c-detection>=0.0.5
-gpiozero
-rpi-lgpio

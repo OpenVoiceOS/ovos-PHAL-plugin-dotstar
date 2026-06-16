@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ovos-PHAL-plugin-dotstar"
+dynamic = ["version"]
+description = "An OVOS PHAL plugin to control DotStar type LEDs"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "builderjer", email = "builderjer@gmail.com"}
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Text Processing :: Linguistic",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+dependencies = [
+    "adafruit-circuitpython-dotstar",
+    "ovos-plugin-manager>=0.0.1",
+    "ovos-lingua-franca>=0.4.8a8",
+    "ovos-i2c-detection>=0.0.5",
+    "gpiozero",
+    "rpi-lgpio"
+]
+
+[project.urls]
+Homepage = "https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar"
+
+[project.entry-points."opm.phal"]
+"ovos-PHAL-plugin-dotstar" = "ovos_PHAL_plugin_dotstar:DotStarLedControlPlugin"
+
+[tool.setuptools.dynamic]
+version = {attr = "version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ovos_PHAL_plugin_dotstar*"]
+
+[tool.setuptools.package-data]
+ovos_PHAL_plugin_dotstar = ["*.json"]
