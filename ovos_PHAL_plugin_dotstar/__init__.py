@@ -3,18 +3,13 @@ from threading import Event
 from os.path import exists, expanduser, join
 from time import sleep
 
-from adafruit_dotstar import DotStar
-import board
-from gpiozero import LED
-from RPi.GPIO import cleanup
-
 from ovos_bus_client.message import Message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_plugin_manager.templates.phal import PHALValidator
 from ovos_utils.log import LOG
 from ovos_config.config import Configuration
 
-from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic
+from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic, is_mark_1
 
 from lingua_franca.util.colors import Color
 from lingua_franca.internal import load_language
@@ -26,12 +21,35 @@ from ovos_PHAL_plugin_dotstar.animations import animations
 # https://github.com/OpenVoiceOS/ovos-i2csound/blob/dev/ovos-i2csound#L76
 I2C_PLATFORM_FILE = "/etc/OpenVoiceOS/i2c_platform"
 
-PREDEFINED_HATS = {
-    "WM8960": DotStar(board.D11, board.D10, 3, brightness=0.2),
-    "RESPEAKER4": DotStar(board.D11, board.D10, 12, brightness=0.2),
-    "RESPEAKER6": DotStar(board.D11, board.D10, 12, brightness=0.2),
-    "ADAFRUIT2MIC": DotStar(board.D6, board.D5, 3, brightness=0.2)
+# Wiring of the supported HATs (clock pin, data pin, number of LEDs). The actual
+# adafruit_dotstar.DotStar objects are built lazily by get_predefined_hat() so
+# the module stays importable on hosts without SPI/LED hardware (e.g. CI).
+PREDEFINED_HAT_PINS = {
+    "WM8960": ("D11", "D10", 3),
+    "RESPEAKER4": ("D11", "D10", 12),
+    "RESPEAKER6": ("D11", "D10", 12),
+    "ADAFRUIT2MIC": ("D6", "D5", 3),
 }
+
+
+def get_predefined_hat(name):
+    """
+    Instantiate the adafruit_dotstar.DotStar strip for a known HAT.
+
+    Hardware libraries (adafruit_dotstar, board) are imported here rather than at
+    module load so the plugin can be imported and unit-tested without LED hardware.
+
+    Parameters:
+        name (str): One of the keys in PREDEFINED_HAT_PINS.
+
+    Returns:
+        adafruit_dotstar.DotStar: configured LED strip.
+    """
+    clock, data, num_led = PREDEFINED_HAT_PINS[name]
+    from adafruit_dotstar import DotStar
+    import board
+    return DotStar(getattr(board, clock), getattr(board, data), num_led,
+                   brightness=0.2)
 
 
 def check_i2c_platform():
@@ -39,7 +57,7 @@ def check_i2c_platform():
         with open(I2C_PLATFORM_FILE, "r") as f:
             platform = f.readline().strip()
             LOG.debug(f"platform in check_i2c_platform: {platform}")
-            if platform in PREDEFINED_HATS:
+            if platform in PREDEFINED_HAT_PINS:
                 LOG.debug(f"detected {platform} in i2c_platform")
                 return platform
     return None
@@ -50,11 +68,32 @@ class DotStarLedControlPluginValidator(PHALValidator):
     @staticmethod
     def validate(config=None):
         # If the user enabled the plugin no need to go further
+        """
+        Validate the configuration for the DotStar LED control plugin.
+        
+        Determines whether the plugin should be activated based on configuration and hardware detection.
+        
+        Parameters:
+            config (dict, optional): Plugin configuration dictionary. Defaults to None.
+        
+        Returns:
+            bool: True if the plugin should be enabled, False otherwise.
+        
+        Conditions for validation:
+            1. If plugin is explicitly enabled in configuration
+            2. If specific audio hardware is detected (WM8960, ReSpeaker 4-mic, ReSpeaker 6-mic)
+            3. Excludes Mark 1 hardware configuration
+        
+        Logs debug information about validation process.
+        """
         if config.get("enabled"):
             LOG.debug("user enabled")
             return True
         # Try a direct hardware check
         if is_wm8960() or is_respeaker_4mic() or is_respeaker_6mic():
+            if is_mark_1():
+                LOG.debug("Mark 1 detected.  Dotstar is not needed")
+                return False
             LOG.debug("direct hardware check")
             return True
         LOG.debug("no validation")
@@ -78,14 +117,15 @@ class DotStarLedControlPlugin(PHALPlugin):
         # Check and see if there is a configuration for a specific board
         if self.config.get("dotstar_hat"):
             ds = self.config.get("dotstar_hat")
-            if ds in PREDEFINED_HATS:
+            if ds in PREDEFINED_HAT_PINS:
                 LOG.debug(f"loading {ds} from config")
                 try:
-                    self.ds = DotStarLed(PREDEFINED_HATS[ds])
+                    self.ds = DotStarLed(get_predefined_hat(ds))
                 except Exception as e:
                     LOG.error(f"Could not load {ds} from config:  {e}")
             elif isinstance(self.config.get("dotstar_hat"), dict):
                 try:
+                    from adafruit_dotstar import DotStar
                     self.ds = DotStar(
                         ds["clock_pin"], ds["led_pin"], ds["num_led"], brightness=ds.get("brightness", 0.2))
                     self._enable_pin = ds.get("enable_pin", None)
@@ -93,7 +133,7 @@ class DotStarLedControlPlugin(PHALPlugin):
                     LOG.error(f"Could not create led array:  {e}")
         else:
             try:
-                self.ds = DotStarLed(PREDEFINED_HATS[check_i2c_platform()])
+                self.ds = DotStarLed(get_predefined_hat(check_i2c_platform()))
             except KeyError as e:
                 LOG.debug(f"check_i2c_platform failed {e}")
             except Exception as e:
@@ -101,19 +141,21 @@ class DotStarLedControlPlugin(PHALPlugin):
         # No manual configuration and i2csound is not installed or failed
         if not self.ds:
             # Direct hardware checks
-            if is_wm8960:
-                self.ds = DotStarLed(PREDEFINED_HATS["WM8960"])
-            elif is_respeaker_4mic:
-                self.ds = DotStarLed(PREDEFINED_HATS["RESPEAKER4"])
-            elif is_respeaker_6mic:
-                self.ds = DotStarLed(PREDEFINED_HATS["RESPEAKER6"])
+            if is_wm8960():
+                self.ds = DotStarLed(get_predefined_hat("WM8960"))
+            elif is_respeaker_4mic():
+                self.ds = DotStarLed(get_predefined_hat("RESPEAKER4"))
+            elif is_respeaker_6mic():
+                self.ds = DotStarLed(get_predefined_hat("RESPEAKER6"))
             # All else fails, fall back to respeker 4mic
             else:
-                self.ds = DotStarLed(PREDEFINED_HATS["RESPEAKER4"])
+                self.ds = DotStarLed(get_predefined_hat("RESPEAKER4"))
 
         # Required for ReSpeaker 4/6/8 mic
         if not is_wm8960():
             LOG.debug("enable LED's")
+            from gpiozero import LED
+            from RPi.GPIO import cleanup
             cleanup(5)
             self._enable_pin = LED(5)
             self._enable_pin.on()

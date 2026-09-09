@@ -1,22 +1,31 @@
 # Changelog
 
-## [V0.0.0](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/V0.0.0) (2024-06-08)
+## [0.0.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.4a1) (2026-09-09)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/V0.0.0a1...V0.0.0)
-
-## [V0.0.0a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/V0.0.0a1) (2024-06-08)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/10bb60227703902e9367615d799fb60bbc5e72af...V0.0.0a1)
-
-**Closed issues:**
-
-- Import Animations from ovos-plugin-manager [\#1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/issues/1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.3a2...0.0.4a1)
 
 **Merged pull requests:**
 
-- Feat/configurable colors animations [\#4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/4) ([builderjer](https://github.com/builderjer))
-- workflow automation [\#3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/3) ([builderjer](https://github.com/builderjer))
-- Fix: not displaying on 4/6/8 mic HAT's [\#2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/2) ([builderjer](https://github.com/builderjer))
+- fix: take AbstractLed from ovos-hardware-helpers [\#24](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/24) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.0.3a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.3a2) (2026-07-31)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.3a1...0.0.3a2)
+
+**Merged pull requests:**
+
+- docs: rewrite README in Simplified Technical English [\#21](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/21) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.0.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.3a1) (2026-06-16)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/V0.0.1...0.0.3a1)
+
+**Merged pull requests:**
+
+- chore: add missing shared CI workflows [\#18](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/18) ([JarbasAl](https://github.com/JarbasAl))
+- Update dependency python to 3.14 [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/10) ([renovate[bot]](https://github.com/apps/renovate))
+- Configure Renovate [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/9) ([renovate[bot]](https://github.com/apps/renovate))
+- disable for mk1 devices [\#5](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/5) ([builderjer](https://github.com/builderjer))
 
 
 
