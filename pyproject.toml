@@ -25,6 +25,9 @@ dependencies = [
     "ovos-plugin-manager>=2.1.0,<3.0.0",
     "ovos-lingua-franca>=0.4.8a8",
     "ovos-i2c-detection>=0.0.5",
+    # AbstractLed. ovos-plugin-manager's hardware module is a deprecated shim
+    # for this package and does not install it.
+    "ovos-hardware-helpers",
     # Raspberry Pi LED/GPIO stack. These only build/run on the Pi and pull C
     # extensions (lgpio) that cannot compile on generic CI runners, so they are
     # gated to ARM Linux. The plugin imports them lazily at LED init time.
