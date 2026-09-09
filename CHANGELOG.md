@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.4a1) (2026-09-09)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.3a2...0.0.4a1)
+
+**Merged pull requests:**
+
+- fix: take AbstractLed from ovos-hardware-helpers [\#24](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/24) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.3a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.3a2) (2026-07-31)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.3a1...0.0.3a2)
