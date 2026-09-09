@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from ovos_plugin_manager.hardware.led import AbstractLed
+from ovos_hardware_helpers.led import AbstractLed
 
 
 class DotStarLed(AbstractLed):
