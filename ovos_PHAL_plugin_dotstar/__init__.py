@@ -1,3 +1,4 @@
+import ast
 from threading import Event
 
 from os.path import exists, expanduser, join
@@ -16,6 +17,25 @@ from lingua_franca.internal import load_language
 
 from ovos_PHAL_plugin_dotstar.leds import DotStarLed
 from ovos_PHAL_plugin_dotstar.animations import animations
+
+
+def parse_rgb_literal(value):
+    """Read an RGB triple written as a literal, e.g. ``"(255, 0, 0)"``.
+
+    Only a list or tuple of three integers is accepted. Anything else raises,
+    which lets the caller fall through to the hex and description forms.
+
+    This is deliberately ``ast.literal_eval`` and not ``eval``. The colour
+    reaches here from configuration, and configuration is writable over the
+    message bus, so ``eval`` made any string that arrives there run as code.
+    """
+    parsed = ast.literal_eval(value)
+    if not isinstance(parsed, (list, tuple)) or len(parsed) != 3:
+        raise ValueError(f"not an RGB triple: {value!r}")
+    if not all(isinstance(channel, int) for channel in parsed):
+        raise ValueError(f"RGB channels must be integers: {value!r}")
+    return tuple(parsed)
+
 
 # File defined in ovos-i2csound
 # https://github.com/OpenVoiceOS/ovos-i2csound/blob/dev/ovos-i2csound#L76
@@ -170,10 +190,10 @@ class DotStarLedControlPlugin(PHALPlugin):
             "main_color", Color.from_description("Mycroft blue"))
         if isinstance(color, str):
             try:
-                color = eval(color)
+                color = parse_rgb_literal(color)
                 color = Color.from_rgb(color[0], color[1], color[2])
             except Exception as e:
-                LOG.debug(f"Exception caught in eval {e}")
+                LOG.debug(f"Exception caught parsing an RGB literal {e}")
                 try:
                     LOG.debug(color)
                     color = Color.from_hex(color)
@@ -193,10 +213,10 @@ class DotStarLedControlPlugin(PHALPlugin):
             "background_color", Color.from_description("OVOS red"))
         if isinstance(color, str):
             try:
-                color = eval(color)
+                color = parse_rgb_literal(color)
                 color = Color.from_rgb(color[0], color[1], color[2])
             except Exception as e:
-                LOG.debug(f"Exception caught in eval {e}")
+                LOG.debug(f"Exception caught parsing an RGB literal {e}")
                 try:
                     color = Color.from_description(color)
                 except Exception as e:
