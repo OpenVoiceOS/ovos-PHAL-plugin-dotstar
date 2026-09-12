@@ -25,6 +25,8 @@ dependencies = [
     "ovos-plugin-manager>=2.1.0,<3.0.0",
     "ovos-lingua-franca>=0.4.8a8",
     "ovos-i2c-detection>=0.0.5",
+    # eval_color and color_from_description back the main_color property.
+    "ovos-color-parser",
     # AbstractLed. ovos-plugin-manager's hardware module is a deprecated shim
     # for this package and does not install it.
     "ovos-hardware-helpers",

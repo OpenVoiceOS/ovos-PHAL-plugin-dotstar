@@ -5,6 +5,7 @@ detection, the DotStarLed wrapper and the LED animations) without requiring any
 real LED/GPIO hardware. The Raspberry Pi hardware libraries (adafruit_dotstar,
 board, gpiozero, RPi.GPIO) are imported lazily inside the plugin, so the package
 imports cleanly here and the LED strip is replaced by a simple in-memory fake.
+The LED animations live in ovos-hardware-helpers.
 """
 import unittest
 from unittest.mock import patch
@@ -16,7 +17,7 @@ from ovos_PHAL_plugin_dotstar import (
     get_predefined_hat,
 )
 from ovos_PHAL_plugin_dotstar.leds import DotStarLed
-from ovos_PHAL_plugin_dotstar.animations import (
+from ovos_hardware_helpers.led.animations import (
     animations,
     BlinkLedAnimation,
     FillLedAnimation,
@@ -139,10 +140,10 @@ class TestAnimationsRegistry(unittest.TestCase):
 
 class TestFillAnimation(unittest.TestCase):
     def test_fill_sets_each_led(self):
-        from lingua_franca.util.colors import Color
+        from ovos_color_parser import sRGBAColor
         strip = FakeStrip(n=3)
         led = DotStarLed(strip)
-        anim = FillLedAnimation(led, Color.from_rgb(10, 20, 30))
+        anim = FillLedAnimation(led, sRGBAColor(10, 20, 30))
         # patch the internal delay so the test does not sleep
         anim._delay.set()
         anim.start()
@@ -153,10 +154,10 @@ class TestFillAnimation(unittest.TestCase):
 
 class TestBlinkAnimationOneShot(unittest.TestCase):
     def test_blink_one_shot_terminates(self):
-        from lingua_franca.util.colors import Color
+        from ovos_color_parser import sRGBAColor
         strip = FakeStrip(n=2)
         led = DotStarLed(strip)
-        anim = BlinkLedAnimation(led, Color.from_rgb(255, 0, 0), num_blinks=1)
+        anim = BlinkLedAnimation(led, sRGBAColor(255, 0, 0), num_blinks=1)
         anim._delay.set()
         # one_shot must terminate the loop without an explicit stop()
         anim.start(one_shot=True)

@@ -37,4 +37,4 @@ class DotStarLed(AbstractLed):
         :param bright_val: 0.0-1.0 brightness scalar value
         :returns: Float modified color value to account for brightness
         """
-        return min(255.0, round(color_val * bright_val))
+        return min(255, round(color_val * bright_val))
