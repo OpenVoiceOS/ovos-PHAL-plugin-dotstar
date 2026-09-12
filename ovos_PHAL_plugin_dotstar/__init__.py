@@ -12,10 +12,12 @@ from ovos_config.config import Configuration
 from ovos_i2c_detection import is_wm8960, is_respeaker_4mic, is_respeaker_6mic, is_mark_1
 
 from lingua_franca.util.colors import Color
-from lingua_franca.internal import load_language
+
+from ovos_color_parser import color_from_description
+from ovos_hardware_helpers.led import eval_color
+from ovos_hardware_helpers.led.animations import animations
 
 from ovos_PHAL_plugin_dotstar.leds import DotStarLed
-from ovos_PHAL_plugin_dotstar.animations import animations
 
 # File defined in ovos-i2csound
 # https://github.com/OpenVoiceOS/ovos-i2csound/blob/dev/ovos-i2csound#L76
@@ -103,12 +105,6 @@ class DotStarLedControlPluginValidator(PHALValidator):
 class DotStarLedControlPlugin(PHALPlugin):
     validator = DotStarLedControlPluginValidator
 
-    lang = Configuration().get("lang", "en")
-    try:
-        load_language(lang)
-    except Exception as e:
-        LOG.error(f"Could not load language model {e}")
-
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-dotstar", config=config)
         self._enable_pin = None
@@ -159,33 +155,23 @@ class DotStarLedControlPlugin(PHALPlugin):
             cleanup(5)
             self._enable_pin = LED(5)
             self._enable_pin.on()
+        
+        color = self.config.get("main_color", "Mycroft Blue")
+        self._main_color = eval_color(color) or \
+            color_from_description("Mycroft Blue", fuzzy=False)
 
-        self.ds.fill(self.main_color.rgb255)
+        self.ds.fill((self.main_color.r, self.main_color.g, self.main_color.b))
         sleep(1.0)
         self.on_reset()
 
     @property
     def main_color(self):
-        color = self.config.get(
-            "main_color", Color.from_description("Mycroft blue"))
-        if isinstance(color, str):
-            try:
-                color = eval(color)
-                color = Color.from_rgb(color[0], color[1], color[2])
-            except Exception as e:
-                LOG.debug(f"Exception caught in eval {e}")
-                try:
-                    LOG.debug(color)
-                    color = Color.from_hex(color)
-                    LOG.debug(color)
-                except Exception as e:
-                    LOG.debug(f"Exception caught in description {e}")
-                    try:
-                        color = Color.from_description(color)
-                    except Exception as e:
-                        LOG.warning(f"could not set color to {color}: {e}")
-                        color = Color.from_description("Mycroft blue")
-        return color
+        return self._main_color
+
+    @main_color.setter
+    def main_color(self, color):
+        self._main_color = eval_color(color) or \
+            color_from_description("Mycroft Blue", fuzzy=False)
 
     @property
     def background_color(self):
@@ -225,10 +211,8 @@ class DotStarLedControlPlugin(PHALPlugin):
         self.on_reset()
 
     def on_audio_output_start(self, message=None):
-        LOG.debug(animations[self.talking_animation])
         self.active_animation = animations[self.talking_animation](
             self.ds, self.main_color, repeat=True)
-        LOG.debug(self.active_animation)
         self.active_animation.start()
 
     def on_audio_output_end(self, message=None):
@@ -241,7 +225,7 @@ class DotStarLedControlPlugin(PHALPlugin):
         if self.active_animation:
             self.active_animation.stop()
             self.active_animation = None
-        self.ds.fill(Color.from_description("black").rgb255)
+        self.ds.fill((0, 0, 0))
 
     def on_system_reset(self, message=None):
         self.on_reset()
