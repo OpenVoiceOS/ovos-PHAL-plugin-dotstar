@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.5a1) (2026-09-16)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.4a1...0.0.5a1)
+
+**Merged pull requests:**
+
+- fix: parse the configured colour instead of executing it [\#23](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/23) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.4a1) (2026-09-09)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.3a2...0.0.4a1)
