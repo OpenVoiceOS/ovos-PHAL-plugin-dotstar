@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.5a2) (2026-09-18)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.5a1...0.0.5a2)
+
+**Merged pull requests:**
+
+- Update actions/checkout action to v7 [\#20](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/20) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [0.0.5a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.5a1) (2026-09-16)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.4a1...0.0.5a1)
