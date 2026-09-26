@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ovos-PHAL-plugin-dotstar"
+dynamic = ["version"]
+description = "An OVOS PHAL plugin to control DotStar type LEDs"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "builderjer", email = "builderjer@gmail.com"}
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Text Processing :: Linguistic",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+dependencies = [
+    "ovos-plugin-manager>=2.1.0,<3.0.0",
+    "ovos-lingua-franca>=0.4.8a8",
+    "ovos-i2c-detection>=0.0.5",
+    # AbstractLed. ovos-plugin-manager's hardware module is a deprecated shim
+    # for this package and does not install it.
+    "ovos-hardware-helpers",
+    # Raspberry Pi LED/GPIO stack. These only build/run on the Pi and pull C
+    # extensions (lgpio) that cannot compile on generic CI runners, so they are
+    # gated to ARM Linux. The plugin imports them lazily at LED init time.
+    "adafruit-circuitpython-dotstar ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
+    "gpiozero ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
+    "rpi-lgpio ; platform_machine == 'aarch64' or platform_machine == 'armv7l' or platform_machine == 'armv6l'",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+
+[project.urls]
+Homepage = "https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar"
+
+[project.entry-points."opm.phal"]
+"ovos-PHAL-plugin-dotstar" = "ovos_PHAL_plugin_dotstar:DotStarLedControlPlugin"
+
+[tool.setuptools.dynamic]
+version = {attr = "version.__version__"}
+
+[tool.setuptools]
+py-modules = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ovos_PHAL_plugin_dotstar*"]
+
+[tool.setuptools.package-data]
+ovos_PHAL_plugin_dotstar = ["*.json"]

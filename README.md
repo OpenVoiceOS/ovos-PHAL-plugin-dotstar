@@ -1,16 +1,24 @@
 # ovos-PHAL-plugin-dotstar
 
-**Compatible with**
-* Respeaker 2/4/6/8 i2c microphone HAT's
-* Adafruit 2 mic VoiceBonnet
+This is an OVOS PHAL plugin. It controls DotStar type LEDs on compatible hardware.
 
-# Usage
+**Compatible hardware**
+* ReSpeaker 2/4/6/8 i2c microphone HATs
+* Adafruit 2-mic VoiceBonnet
 
-There are a few ways for this plugin to get enabled.
+## Install
 
-* Enable manually
+```bash
+pip install ovos-PHAL-plugin-dotstar
+```
 
-Add this to your `~/.config/mycroft/mycroft.conf`
+## Usage
+
+You can enable this plugin in three ways.
+
+### Enable manually
+
+Add this to your `~/.config/mycroft/mycroft.conf`.
 
 ```json
 {
@@ -21,23 +29,24 @@ Add this to your `~/.config/mycroft/mycroft.conf`
     }
 }
 ```
-With this configuration, no other validation checks are made.  It is assuming you have a compatible HAT installed.
 
-* Automatically with [ovos-i2csound](https://github.com/OpenVoiceOS/ovos-i2csound)
+With this configuration, the plugin makes no other checks. It assumes you have a compatible HAT installed.
 
-When `ovos-i2csound` is installed and running, it creates a file at `/etc/OpenVoiceOS/i2c_platform` with the HAT name it detected.  This plugin then checks that file and if a compatible HAT is detected, the plugin is activated.
+### Enable automatically with ovos-i2csound
 
-* Automatically with hardware detection
+When [ovos-i2csound](https://github.com/OpenVoiceOS/ovos-i2csound) is installed and running, it creates a file at `/etc/OpenVoiceOS/i2c_platform` with the name of the HAT it detected. This plugin reads that file. If it lists a compatible HAT, the plugin activates.
 
-If the above two options don't work, the plugin tries to detect a compatible HAT using `i2c-detect`.  If a compatible device address is found, the plugin will activate.
+### Enable automatically with hardware detection
 
-From this point, if you are using a ReSpeaker i2c microphone, your LED's should give you prompts of what is going on with your OVOS assistant.
+If the two options above do not work, the plugin tries to detect a compatible HAT with `i2c-detect`. If it finds a compatible device address, the plugin activates.
 
-### Adafruit 2mic voicebonnet
+Once enabled, the LEDs on a ReSpeaker i2c microphone HAT show prompts for what your OVOS assistant is doing.
 
-The [Adafruit voicebonnet](https://learn.adafruit.com/adafruit-voice-bonnet/overview) can be used with this plugin, but it requires one more step of manual configuration.  While the above detection options will properly enable the plugin, this HAT uses different GPIO pins for it's LED's, therefore cannot be easily distinguished from a ReSpeaker 2mic HAT.
+### Adafruit 2-mic VoiceBonnet
 
-Add the following to your `~/.config/mycroft/mycroft.conf` file
+You can use the [Adafruit VoiceBonnet](https://learn.adafruit.com/adafruit-voice-bonnet/overview) with this plugin, but it needs one extra configuration step. The detection options above enable the plugin correctly, but this HAT uses different GPIO pins for its LEDs. The plugin cannot tell it apart from a ReSpeaker 2-mic HAT by detection alone.
+
+Add this to your `~/.config/mycroft/mycroft.conf` file.
 
 ```json
 {
@@ -49,13 +58,11 @@ Add the following to your `~/.config/mycroft/mycroft.conf` file
 }
 ```
 
-And restart OVOS
+Restart OVOS. The LEDs on your Adafruit VoiceBonnet now show the same prompts as the ReSpeaker devices.
 
-Your LED's on your Adafruit voicebonnet will now show the same prompts as the ReSpeaker devices.
+## Custom configuration
 
-## Custom Configuration
-
-Colors and animations can be configured in `~/.config/mycroft/mycroft.conf`
+You can configure colors and animations in `~/.config/mycroft/mycroft.conf`.
 
 ```json
 {
@@ -77,49 +84,46 @@ Colors and animations can be configured in `~/.config/mycroft/mycroft.conf`
     hex value -> "#22A7F0"
 ```
 
-`background_color` -> str
+`background_color` -> str:
 ```
     rgb value -> "32, 195, 63"
     name -> "red"
     hex value -> "#FF1A1A"
 ```
 
-`listen_animation` -> str:
+`listen_animation` -> str, one of:
 ```
-    one of:
-        'breathe'
-        'chase'
-        'fill'
-        'refill'
-        'bounce'
-        'blink'
-        'alternating'
+    'breathe'
+    'chase'
+    'fill'
+    'refill'
+    'bounce'
+    'blink'
+    'alternating'
 ```
 
-`talking_animation` -> str:
+`talking_animation` -> str, one of:
 ```
-    one of:
-        'breathe'
-        'chase'
-        'fill'
-        'refill'
-        'bounce'
-        'blink'
-        'alternating'
+    'breathe'
+    'chase'
+    'fill'
+    'refill'
+    'bounce'
+    'blink'
+    'alternating'
 ```
-## Conflicts With
 
-There are two pre-existing plugins that either need uninstalled with pip, or blacklisted in your `mycroft.conf` file.
+## Conflicts with
 
-[ovos-PHAL-plugin-respeaker2mic](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-respeaker-2mic)
-[ovos-PHAL-plugin-respeaker4mic](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-respeaker-4mic)
+Two other plugins control the same LEDs. Uninstall them with pip, or blacklist them in your `mycroft.conf` file, before you use this plugin.
 
-### TODO
+* [OpenVoiceOS/ovos-PHAL-plugin-respeaker2mic](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-respeaker-2mic)
+* [OpenVoiceOS/ovos-PHAL-plugin-respeaker4mic](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-respeaker-4mic)
 
-- [x] Add more animations
-- [x] User configurable colors
-- [ ] Theme support
-- [x] User configurable animations
-- [ ] Add github tests and automation
+## Related projects
 
-Please enjoy this plugin and don't be afraid to create an [issue](#) if you run into any problems.
+* [OpenVoiceOS/ovos-i2csound](https://github.com/OpenVoiceOS/ovos-i2csound) — detects i2c HATs and enables this plugin automatically
+
+## License
+
+This project is licensed under the [MIT license](LICENSE).
