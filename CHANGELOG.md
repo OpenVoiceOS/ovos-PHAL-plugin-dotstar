@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.5a3) (2026-09-26)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.5a2...0.0.5a3)
+
+**Merged pull requests:**
+
+- ci: update the action actionlint reports as too old [\#28](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/pull/28) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.0.5a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/tree/0.0.5a2) (2026-09-18)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-dotstar/compare/0.0.5a1...0.0.5a2)
